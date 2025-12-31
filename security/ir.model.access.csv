@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_payroll_import_user,Payroll Import User,model_hr_payroll_import,hr_payroll.group_hr_payroll_user,1,1,1,0
+access_hr_payroll_import_line_user,Payroll Import Line User,model_hr_payroll_import_line,hr_payroll.group_hr_payroll_user,1,1,1,0
+access_hr_payroll_import_wizard_user,Payroll Import Wizard User,model_hr_payroll_import_wizard,hr_payroll.group_hr_payroll_user,1,1,1,0
+access_hr_payroll_import_manager,Payroll Import Manager,model_hr_payroll_import,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_payroll_import_line_manager,Payroll Import Line Manager,model_hr_payroll_import_line,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_payroll_import_wizard_manager,Payroll Import Wizard Manager,model_hr_payroll_import_wizard,hr_payroll.group_hr_payroll_manager,1,1,1,1

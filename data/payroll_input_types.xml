@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Sequence for import sheet name -->
+  <record id="seq_hr_payroll_import" model="ir.sequence">
+    <field name="name">Payroll Import Sequence</field>
+    <field name="code">hr.payroll.import</field>
+    <field name="prefix"></field>
+    <field name="padding">3</field>
+  </record>
+</odoo>
