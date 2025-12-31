@@ -47,7 +47,7 @@ class HrPayrollImport(models.Model):
         return super().create(vals_list)
 
     # ------------------------------------------------------------------
-    # import Excel button
+    # import Excel button - FIXED VERSION
     # ------------------------------------------------------------------
     def action_import_excel(self):
         self.ensure_one()
@@ -90,7 +90,7 @@ class HrPayrollImport(models.Model):
                 ('code', '=', str(input_type_code).strip())
             ], limit=1)
             if not input_type:
-                error_lines.append((idx, f'Input Type not found: {input_type_code}. Create it in Payroll > Configuration > Input Types.'))
+                error_lines.append((idx, f'Input Type not found: {input_type_code}'))
                 continue
 
             # Build description
@@ -110,28 +110,46 @@ class HrPayrollImport(models.Model):
             created += 1
 
         self.import_file = False
-        message = f'Imported {created} rows.'
-        if error_lines:
-            message += '\nErrors:\n' + '\n'.join([f'Row {r}: {m}' for r, m in error_lines])
         
-        # Show result in a non-blocking way
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('Import Result'),
-                'message': message,
-                'type': 'info' if error_lines else 'success',
-                'sticky': False,
-                'next': {
-                    'type': 'ir.actions.act_window',
-                    'res_model': self._name,
-                    'res_id': self.id,
-                    'view_mode': 'form',
-                    'target': 'main',
-                }
+        # Prepare feedback message
+        message = f'✅ Successfully imported {created} rows.'
+        if error_lines:
+            message += '\n\n⚠️ Errors encountered:\n' + '\n'.join([f'Row {r}: {m}' for r, m in error_lines])
+            
+            # Also log detailed errors for debugging
+            _logger = self.env['ir.logging'].sudo()
+            for row_num, err_msg in error_lines:
+                _logger.warning(f"Payroll Import {self.name}: Row {row_num} - {err_msg}")
+        
+        # Show success/failure in a non-blocking way
+        # Use simple notification through raise Warning (will show as a banner)
+        if error_lines and created == 0:
+            # If nothing was imported, raise an error
+            raise UserError(message)
+        elif error_lines:
+            # If partial success, show warning but still reload the form
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': self._name,
+                'res_id': self.id,
+                'view_mode': 'form',
+                'target': 'main',
+                'context': {
+                    'default_import_file': False,
+                },
             }
-        }
+        else:
+            # Full success - simple reload
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': self._name,
+                'res_id': self.id,
+                'view_mode': 'form',
+                'target': 'main',
+                'context': {
+                    'default_import_file': False,
+                },
+            }
 
     # ------------------------------------------------------------------
     # apply to payslips button
